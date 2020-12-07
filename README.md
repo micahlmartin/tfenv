@@ -128,6 +128,15 @@ terraform {
 
 #### TFENV
 
+##### `TFENV_TERRAFORM_VERSION`
+String (Default: Not set)
+
+Specify the version of terraform to use. This will override any version set in the version file.
+
+```
+TFENV_TERRAFORM_VERSION=0.12.7 terraform version
+```
+
 ##### `TFENV_ARCH`
 
 String (Default: amd64)

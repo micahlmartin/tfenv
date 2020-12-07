@@ -85,6 +85,10 @@ if [ -z "${arg}" ]; then
       version_requested='latest';
     fi;
 
+  elif [[ ! -z "${TFENV_TERRAFORM_VERSION+x}" ]]; then
+    log 'debug' "Version ${TFENV_TERRAFORM_VERSION} set by environment variable"
+    version_requested="${TFENV_TERRAFORM_VERSION}"
+    
   else
     log 'debug' "Version File is the default \${TFENV_ROOT}/version (${TFENV_ROOT}/version) but it doesn't exist";
     log 'info' 'No version requested on the command line or in the version file search path. Installing "latest"';

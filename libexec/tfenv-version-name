@@ -63,12 +63,19 @@ done;
 [ -d "${TFENV_ROOT}/versions" ] \
   || log 'error' 'No versions of terraform installed. Please install one with: tfenv install';
 
-TFENV_VERSION_FILE="$(tfenv-version-file)" \
-  && log 'debug' "TFENV_VERSION_FILE retrieved from tfenv-version-file: ${TFENV_VERSION_FILE}" \
-  || log 'error' 'Failed to retrieve TFENV_VERSION_FILE from tfenv-version-file';
+if [ ! -z "${TFENV_TERRAFORM_VERSION+x}" ]; then
+  log 'debug' "******************************* FUCK "${TFENV_TERRAFORM_VERSION}" ************************************"
+  log 'debug' "Terraform version ${TFENV_TERRAFORM_VERSION} set by environment variable"
+  TFENV_VERSION="${TFENV_TERRAFORM_VERSION}"
 
-TFENV_VERSION="$(cat "${TFENV_VERSION_FILE}" || true)" \
-  && log 'debug' "TFENV_VERSION specified in TFENV_VERSION_FILE: ${TFENV_VERSION}";
+else
+  TFENV_VERSION_FILE="$(tfenv-version-file)" \
+    && log 'debug' "TFENV_VERSION_FILE retrieved from tfenv-version-file: ${TFENV_VERSION_FILE}" \
+    || log 'error' 'Failed to retrieve TFENV_VERSION_FILE from tfenv-version-file';
+
+  TFENV_VERSION="$(cat "${TFENV_VERSION_FILE}" || true)" \
+    && log 'debug' "TFENV_VERSION specified in TFENV_VERSION_FILE: ${TFENV_VERSION}";
+fi
 
 if [[ "${TFENV_VERSION}" =~ ^latest.*$ ]]; then
   log 'debug' "TFENV_VERSION uses 'latest' keyword: ${TFENV_VERSION}";
@@ -93,16 +100,15 @@ if [[ "${TFENV_VERSION}" =~ ^latest.*$ ]]; then
   else
     log 'error' "No installed versions of terraform matched '${TFENV_VERSION}'";
   fi;
-
 else
   log 'debug' 'TFENV_VERSION does not use "latest" keyword';
 fi;
 
 [ -z "${TFENV_VERSION}" ] \
-  && log 'error' "Version could not be resolved (set by ${TFENV_VERSION_FILE} or tfenv use <version>)";
+  && log 'error' "Version could not be resolved";
 
 if [ ! -d "${TFENV_ROOT}/versions/${TFENV_VERSION}" ]; then
-  log 'debug' "version '${TFENV_VERSION}' is not installed (set by ${TFENV_VERSION_FILE})";
+  log 'debug' "version '${TFENV_VERSION}' is not installed";
 fi;
 
 echo "${TFENV_VERSION}";
